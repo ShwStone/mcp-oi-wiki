@@ -1,9 +1,11 @@
 from pymilvus import MilvusClient
 from fastembed import TextEmbedding
 import sys
+import os
 import json
 
 def main(
+        docs_dir : str = './OI-wiki/docs',
         db_path : str = './db/oi-wiki.db',
         embedding_model : str = 'BAAI/bge-small-zh-v1.5'
     ):
@@ -19,8 +21,15 @@ def main(
         for line in f.readlines() :
             line = line.strip('\n')
             data = json.loads(line)
-            paths.append(data["custom_id"])
+            path = data["custom_id"]
+            paths.append(path)
             contents.append(data["response"]["body"]["choices"][0]["message"]["content"])
+
+            with open(os.path.join(docs_dir, path), 'r') as raw_f :
+                raw = raw_f.read(512)
+
+            paths.append(path)
+            contents.append(raw)
 
     vectors = list(embedding.embed(contents))
     dimension = len(vectors[0])

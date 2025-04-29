@@ -2,6 +2,8 @@
 
 让大模型拥有 OI-Wiki 的加成！
 
+![乘法逆元搜索结果](./image.png)
+
 ## How does it work?
 
 使用 Deepseek-V3 对 OI-wiki 当前的 462 个页面做摘要，将摘要嵌入为语义向量，建立向量数据库。
