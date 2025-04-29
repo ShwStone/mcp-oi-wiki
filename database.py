@@ -1,19 +1,16 @@
 from pymilvus import MilvusClient
-import numpy as np
 from fastembed import TextEmbedding
 import os
 
 class OIWikiDB :
     def __init__(
-            self, 
-            rebuild : bool = False, 
+            self,
             docs_dir : str = './OI-wiki/docs/',
             db_path : str = './db/oi-wiki.db',
-            embedding_model : str = 'BAAI/bge-small-zh-v1.5',
-            effective_length : int = 16
+            embedding_model : str = 'BAAI/bge-small-zh-v1.5'
         ) :
         """
-        创建/导入一个 OI-Wiki 数据库
+        导入一个 OI-Wiki 数据库
 
         @param rebuild: 是否强制重新创建
 
@@ -21,78 +18,41 @@ class OIWikiDB :
 
         @param db_path: 数据库存储位置
 
-        @param embedding 模型名称
-
-        @effective_length 索引的最小段落长度
+        @param embedding 嵌入模型名称
         """
         
-        self.client = MilvusClient(db_path)
-        self.embedding_model = TextEmbedding(embedding_model)
-        self._effective_length = effective_length
+        self._client = MilvusClient(db_path)
+        self._embedding_model = TextEmbedding(embedding_model)
         self._collection_name = "oiwiki"
+        self._docs_dir = docs_dir
 
-        exists = self.client.has_collection(self._collection_name)
-
-        if exists :
-            if rebuild :
-                self.client.drop_collection(self._collection_name)
-                self._load_oi_wiki(docs_dir)
-        else :
-            self._load_oi_wiki(docs_dir)
-
-    def _load_oi_wiki(self, docs_dir : str) :
-        contents = []
-        paths = []
-
-        for subject_name in os.listdir(docs_dir):
-            subject_path = os.path.join(docs_dir, subject_name)
-            if not os.path.isdir(subject_path) :
-                continue
-
-            for file in os.listdir(subject_path):
-                if not file.endswith('.md') :
-                    continue
-
-                file_path = os.path.join(subject_path, file)
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    # content = [line.strip() for line in f]
-                    # content = [
-                    #     line 
-                    #     for line in content
-                    #     if len(line) - line.count(' ') >= self._effective_length
-                    # ]
-                    content = [f.read().strip()]
-                    contents += content
-                    paths += [file_path] * len(content)
-        
-        vectors = list(self.embedding_model.embed(contents))
-        dimension = len(vectors[0])
-
-        self.client.create_collection(
-            collection_name=self._collection_name,
-            dimension=dimension, 
-        )
-
-        data = [
-            {"id": i, "vector": vectors[i], "path": paths[i]}
-            for i in range(len(vectors))
-        ]
-
-        self.client.insert(
-            collection_name=self._collection_name,
-            data=data
-        )
+        exists = self._client.has_collection(self._collection_name)
+        if not exists :
+            raise Exception(f"{db_path} don't have a {self._collection_name} collection! Make sure you downloaded correct db file.")
         
     def search(self, query : str | list[str]) :
         if type(query) == str :
             query = [query]
 
-        qvectors = list(self.embedding_model.embed(query))
-        res = self.client.search(
+        qvectors = list(self._embedding_model.embed(query))
+        results = self._client.search(
             collection_name=self._collection_name, 
             data=qvectors, 
-            limit=2,
+            limit=1,
             output_fields=["path"]
         )
 
-        return res
+        def readfile(path) :
+            with open(path, 'r') as f:
+                res = f.read()
+            return res
+
+        results = [[
+                readfile(os.path.join(self._docs_dir, r.entity.path))
+                for r in res
+            ] for res in results
+        ]
+
+        return results
+        
+

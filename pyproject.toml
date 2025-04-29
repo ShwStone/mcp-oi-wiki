@@ -6,5 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastembed>=0.6.1",
+    "mcp[cli]>=1.6.0",
+    "openai>=1.76.0",
     "pymilvus>=2.5.7",
+    "transformers>=4.51.3",
 ]

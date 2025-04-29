@@ -9,4 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-db/*
+api.key
+*.jsonl
+*.db.lock
