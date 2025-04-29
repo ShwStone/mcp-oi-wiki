@@ -1,0 +1,10 @@
+[project]
+name = "mcp-oi-wiki"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastembed>=0.6.1",
+    "pymilvus>=2.5.7",
+]
