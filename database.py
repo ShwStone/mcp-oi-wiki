@@ -30,11 +30,8 @@ class OIWikiDB :
         if not exists :
             raise Exception(f"{db_path} don't have a {self._collection_name} collection! Make sure you downloaded correct db file.")
         
-    def search(self, query : str | list[str]) :
-        if type(query) == str :
-            query = [query]
-
-        qvectors = list(self._embedding_model.embed(query))
+    def search(self, query : str) :
+        qvectors = list(self._embedding_model.embed([query]))
         results = self._client.search(
             collection_name=self._collection_name, 
             data=qvectors, 
@@ -42,17 +39,13 @@ class OIWikiDB :
             output_fields=["path"]
         )
 
-        def readfile(path) :
-            with open(path, 'r') as f:
-                res = f.read()
-            return res
+        print(results[0][0]["entity"]["path"])
 
-        results = [[
-                readfile(os.path.join(self._docs_dir, r.entity.path))
-                for r in res
-            ] for res in results
-        ]
+        path = os.path.join(self._docs_dir, results[0][0].entity.path)
+        print(path)
+        with open(path, 'r') as f:
+            res = f.read()
 
-        return results
+        return res
         
 

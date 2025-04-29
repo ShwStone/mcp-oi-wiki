@@ -25,15 +25,16 @@ def gen_requests(docs_dir) :
             if not os.path.isdir(subject_path) :
                 continue
 
-            for file in os.listdir(subject_path):
-                if not file.endswith('.md') :
-                    continue
+            for middle, _, files in os.walk(subject_path):
+                for file in files:
+                    if not file.endswith('.md') :
+                        continue
 
-                file_path = os.path.join(subject_path, file)
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    text = f.read()
-                    path = os.path.join(subject_name, file)
-                    format_request(path, text[:7500], output_file)
+                    file_path = os.path.join(middle, file)
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        text = f.read()
+                        path = file_path[len(docs_dir):]
+                        format_request(path, text[:7500], output_file)
 
 def make_request() :
     client = OpenAI(
