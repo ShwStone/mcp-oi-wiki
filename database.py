@@ -39,10 +39,7 @@ class OIWikiDB :
             output_fields=["path"]
         )
 
-        print(results[0][0]["entity"]["path"])
-
         path = os.path.join(self._docs_dir, results[0][0].entity.path)
-        print(path)
         with open(path, 'r') as f:
             res = f.read()
 
