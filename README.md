@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/shwstone-mcp-oi-wiki-badge.png)](https://mseep.ai/app/shwstone-mcp-oi-wiki)
+
 # mcp-oi-wiki
 
 让大模型拥有 OI-Wiki 的加成！
