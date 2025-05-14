@@ -1,4 +1,5 @@
 [![MseeP.ai Security Assessment Badge](https://mseep.net/pr/shwstone-mcp-oi-wiki-badge.png)](https://mseep.ai/app/shwstone-mcp-oi-wiki)
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/9d61dc89-76bb-401f-840e-07ba2c9cb39b)
 
 # mcp-oi-wiki
 
